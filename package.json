@@ -7,12 +7,12 @@
     "postinstall": "electron-builder install-app-deps",
     "start": "electron .",
     "build": "DEBUG=electron-builder electron-builder --linux --x64",
+    "buildWin": "electron-builder --win --x64",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Mads",
   "license": "ISC",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "electron-builder": "^24.9.1",
     "electron": "^28.2.1"

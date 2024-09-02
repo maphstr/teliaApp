@@ -1,0 +1,20 @@
+{
+  "name": "teliaapp",
+  "version": "1.0.0",
+  "description": "electron-wrapper for sb.telia",
+  "main": "main.js",
+  "scripts": {
+    "postinstall": "electron-builder install-app-deps",
+    "start": "electron .",
+    "build": "DEBUG=electron-builder electron-builder --linux --x64",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mads",
+  "license": "ISC",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "electron-builder": "^24.9.1",
+    "electron": "^28.2.1"
+  }
+}

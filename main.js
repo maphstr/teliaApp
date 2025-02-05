@@ -30,7 +30,7 @@ function createWindow() {
             contextIsolation: false, // Make sure contextIsolation is false to allow the use of executeJavaScript
             partition: mySession,
         },
-        icon: path.join(__dirname, 'telia.png'),
+        icon: path.join(__dirname, 'icon.png'),
     });
 
     mySession.cookies.get({}).then((cookies) => {
@@ -45,45 +45,67 @@ function createWindow() {
 
     mainWindow.webContents.on('did-finish-load', () => {
         const loginData = loadLoginData();
+        let loginScript = ""
 
         if (loginData) {
-            const script = `
-            setTimeout(() => {
+            loginScript = `
+            let interval2 = setInterval(()=> {
+                console.log('searching for inputs')
+                const usernameInput = document.getElementById('inputUsername');
+                const passwordInput = document.getElementById('inputPassword');
+                
+                if(usernameInput && passwordInput) {
                     console.log('entering login data', "${loginData.username}", "${loginData.password}")
-                    const usernameInput = document.getElementById('inputUsername');
-                    const passwordInput = document.getElementById('inputPassword');
-
                     usernameInput.value = "${loginData.username}";
                     passwordInput.value = "${loginData.password}";
-
+                    
                     // Trigger input events
                     usernameInput.dispatchEvent(new Event('input', { bubbles: true }));
                     passwordInput.dispatchEvent(new Event('input', { bubbles: true }));
-
+                    
                     usernameInput.dispatchEvent(new Event('change', { bubbles: true }));
                     passwordInput.dispatchEvent(new Event('change', { bubbles: true }));
+                    
+                    console.log('entered login information');
+                    clearInterval(interval2)
+                    setTimeout(()=> {
+                        button.click()
+                        console.log('login!')
+                    }, 1000)
+                }
+            }, 500)`;
 
-                    console.log(usernameInput.value, passwordInput.value);
-                }, 1500)
-                `;
-            mainWindow.webContents.executeJavaScript(script);
+
         }
 
         // Inject JS to save login info after a successful login
-        const scriptToSaveLogin = `
-            setTimeout(()=> {
-                console.log('checking')
-                document.querySelector('button.btn.btn-lg.btn-primary.btn-block[type="submit"]').addEventListener('click', () => {
-                    const loginData = {
-                        username: document.getElementById('inputUsername').value,
-                        password: document.getElementById('inputPassword').value,
-                    };
-                    console.log(loginData)
-                    require('electron').ipcRenderer.send('save-login-data', loginData);
-                });
+        const injectScript = `
+            let interval = setInterval(()=> {
+                console.log('checking for save button')
+
+                let btnArr = Array.from(document.querySelectorAll('button'))
+                button = btnArr.find(btn => btn.innerText.trim() === 'Login');
+
+
+                if(button) {
+                    button.addEventListener('click', () => {
+                        const loginData = {
+                            username: document.getElementById('inputUsername').value,
+                            password: document.getElementById('inputPassword').value,
+                        };
+                        console.log(loginData)
+                        require('electron').ipcRenderer.send('save-login-data', loginData);
+                    });
+                    console.log('set save action')
+                    clearInterval(interval)
+
+                    ${loginScript}
+                }
             }, 500)
         `;
-        mainWindow.webContents.executeJavaScript(scriptToSaveLogin);
+
+
+        mainWindow.webContents.executeJavaScript(injectScript);
     });
 
     const { ipcMain } = require('electron');

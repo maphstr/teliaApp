@@ -3,6 +3,13 @@
   "version": "1.0.0",
   "description": "electron-wrapper for sb.telia",
   "main": "main.js",
+  "build": {
+    "afterPack": "./scripts/afterPack.js",
+    "appId": "com.example.yourapp",
+    "linux": {
+      "target": "AppImage"
+    }
+  },
   "scripts": {
     "postinstall": "electron-builder install-app-deps",
     "start": "electron .",

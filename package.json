@@ -4,7 +4,7 @@
   "description": "electron-wrapper for sb.telia",
   "main": "main.js",
   "build": {
-    "afterPack": "./scripts/afterPack.js",
+
     "appId": "com.example.yourapp",
     "linux": {
       "target": "AppImage"

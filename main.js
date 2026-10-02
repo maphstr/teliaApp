@@ -34,7 +34,7 @@ function createWindow() {
     });
 
     // Load your website
-    mainWindow.loadURL('https://sb.telia.no/#/');
+    mainWindow.loadURL('https://sb.telia.no/login/#/');
 
     mainWindow.webContents.on('did-finish-load', () => {
         // Telia's current login stylesheet gives form controls a fixed height
@@ -88,6 +88,9 @@ function createWindow() {
 
                 let btnArr = Array.from(document.querySelectorAll('button'))
                 button = btnArr.find(btn => btn.innerText.trim() === 'Login');
+                if(!button) {
+                    button = btnArr.find(btn => btn.innerText.trim() === 'Logg inn');
+                }
 
 
                 if(button) {

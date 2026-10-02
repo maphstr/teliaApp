@@ -28,22 +28,26 @@ function createWindow() {
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false, // Make sure contextIsolation is false to allow the use of executeJavaScript
-            partition: mySession,
+            session: mySession,
         },
         icon: path.join(__dirname, 'icon.png'),
-    });
-
-    mySession.cookies.get({}).then((cookies) => {
-        console.log('Existing cookies:', cookies);
-        // Optionally, handle or log cookies before loading the URL
-    }).catch((error) => {
-        console.error('Failed to retrieve cookies:', error);
     });
 
     // Load your website
     mainWindow.loadURL('https://sb.telia.no/#/');
 
     mainWindow.webContents.on('did-finish-load', () => {
+        // Telia's current login stylesheet gives form controls a fixed height
+        // that prevents native text input in the 2FA field. Let Chromium size
+        // this field from its content until Telia fixes the upstream CSS.
+        mainWindow.webContents.insertCSS(`
+            #inputCode {
+                height: auto !important;
+            }
+        `).catch((error) => {
+            console.error('Failed to apply the 2FA input workaround:', error);
+        });
+
         const loginData = loadLoginData();
         let loginScript = ""
 
@@ -55,7 +59,6 @@ function createWindow() {
                 const passwordInput = document.getElementById('inputPassword');
                 
                 if(usernameInput && passwordInput) {
-                    console.log('entering login data', "${loginData.username}", "${loginData.password}")
                     usernameInput.value = "${loginData.username}";
                     passwordInput.value = "${loginData.password}";
                     
@@ -93,7 +96,6 @@ function createWindow() {
                             username: document.getElementById('inputUsername').value,
                             password: document.getElementById('inputPassword').value,
                         };
-                        console.log(loginData)
                         require('electron').ipcRenderer.send('save-login-data', loginData);
                     });
                     console.log('set save action')
@@ -116,13 +118,6 @@ function createWindow() {
 
     // Open the DevTools (optional).
     // mainWindow.webContents.openDevTools();
-    mySession.cookies.on('changed', (event, cookie, cause, removed) => {
-        if (!removed) {
-            console.log('Cookie added or updated:', cookie);
-            // Optionally, save the cookie or handle it as needed
-        }
-    });
-
 }
 
 

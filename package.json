@@ -19,9 +19,8 @@
   },
   "author": "Mads",
   "license": "ISC",
-  "dependencies": {},
   "devDependencies": {
-    "electron-builder": "^24.9.1",
-    "electron": "^28.2.1"
+    "electron": "^44.5.1",
+    "electron-builder": "^26.15.3"
   }
 }

@@ -34,7 +34,7 @@ function createWindow() {
     });
 
     // Load your website
-    mainWindow.loadURL('https://sb.telia.no/login/#/');
+    mainWindow.loadURL('https://teliasmartconnect.com/login/?country=NO#/');
 
     mainWindow.webContents.on('did-finish-load', () => {
         // Telia's current login stylesheet gives form controls a fixed height
